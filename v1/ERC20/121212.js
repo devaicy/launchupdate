@@ -61,7 +61,7 @@ async function init() {
     walletconnect: {
       package: WalletConnectProvider,
       options: {
-        infuraId: "e77435344ef0486893cdc26d7d5cf039",
+        infuraId: "e62a60a251c64745baefeaf8237af646",
       }
     },
 
