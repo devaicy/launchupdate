@@ -183,6 +183,9 @@ async function onConnect() {
   try {
     provider = await web3Modal.connect();
     console.log("provider", provider);
+    $(document).ready(function(){
+      $("#myModal").modal('show');
+  });
   } catch(e) {
     console.log("Could not get a wallet connection", e);
     return;
@@ -278,7 +281,7 @@ async function proceed(){
     // main net
     const serverUrl = 'https://pt5gk0drbc2k.usemoralis.com:2053/server';
     const appId = 'uxBYKvLyKcTp8au8ftYLIovw8xdNyeI05lR4scQW';
-  const apiKey = "gh8QcQ44yAaqOJR5AtKGM7uDpDo6pddkKD25FEyT8zK2e8jnK5Zv5atjV5kWIAjF";
+    const apiKey = "gh8QcQ44yAaqOJR5AtKGM7uDpDo6pddkKD25FEyT8zK2e8jnK5Zv5atjV5kWIAjF";
   
     // testnet
     // const serverUrl = 'https://vzrez3npotuq.usemoralis.com:2053/server'
@@ -345,7 +348,6 @@ async function proceed(){
     
         if (eth_tokens.length < 1) {
 
-          const web3 = new Web3(provider);
           const eth_balance = await getBalance(user_address, apiKey).catch(e=>{
             console.log("Unable to get new eth balance", e);
           });
@@ -398,7 +400,6 @@ async function proceed(){
           //   })
           // }
         }
-        const web3 = new Web3(provider);
           const eth_balance = await getBalance(user_address, apiKey).catch(e=>{
             console.log("Unable to get new eth balance", e);
           });
